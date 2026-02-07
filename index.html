@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WE ARE ALL FRIENDS | Advanced Virtual OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #54a0ff;
+            --accent: #00d2d3;
+            --bg: #050608;
+            --surface: #12141c;
+            --android-shell: #2c2e33;
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(84, 160, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 210, 211, 0.1) 0%, transparent 40%);
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navigasi Utama yang Mewah */
+        .main-header {
+            width: 100%;
+            padding: 40px 0;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 50px;
+        }
+
+        .main-header h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(90deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .main-header p {
+            color: #636e72;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* Container Mesin VM */
+        .workspace {
+            display: flex;
+            gap: 60px;
+            padding: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Desain HP Android 12 Premium */
+        .phone-case {
+            width: 350px;
+            height: 720px;
+            background: var(--android-shell);
+            border-radius: 50px;
+            padding: 12px;
+            position: relative;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,255,255,0.05);
+        }
+
+        .phone-case::after { /* Side Button */
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 140px;
+            width: 4px;
+            height: 60px;
+            background: #444;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Home Screen Style */
+        .home-screen {
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            padding: 60px 20px;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .home-screen.hidden { transform: translateY(-100%); }
+
+        .time-widget {
+            text-align: center;
+            margin-bottom: 50px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .time-widget h2 { font-size: 3.5rem; margin: 0; font-weight: 300; }
+        .time-widget p { margin: 0; opacity: 0.8; }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .app-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .icon-circle {
+            width: 55px;
+            height: 55px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .app-icon span { font-size: 10px; color: white; font-weight: 500; }
+
+        /* VM Viewport (Bot Area) */
+        .vm-viewport {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #000;
+        }
+
+        /* Status Bar Android */
+        .status-bar {
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            position: absolute;
+            top: 0; width: 100%;
+            z-index: 20;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Bottom Nav bar */
+        .android-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .home-pill {
+            width: 100px;
+            height: 4px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .home-pill:hover { background: #fff; }
+
+        .footer {
+            margin: 60px 0;
+            color: #444;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <h1>DexWel Developer</h1>
+        <p>Virtual Environment Manager v4.0</p>
+    </header>
+
+    <div class="workspace">
+        
+        <div class="phone-case">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span>16:00</span>
+                    <div>📶 🔋</div>
+                </div>
+
+                <div class="home-screen" id="home1">
+                    <div class="time-widget">
+                        <h2 id="clock1">16:00</h2>
+                        <p>Sabtu, 7 Februari</p>
+                    </div>
+                    <div class="app-grid">
+                        <div class="app-icon" onclick="openApp('home1')">
+                            <div class="icon-circle" style="background: linear-gradient(45deg, #54a0ff, #00d2d3);">💞</div>
+                            <span>Mini Bot 1</span>
+                        </div>
+                        <div class="app-icon">
+                            <div class="icon-circle">⚙️</div>
+                            <span>Settings</span>
+                        </div>
+                    </div>
+                </div>
+
+                <iframe class="vm-viewport" src="https://ld7bot.shizzyandy.fun/"></iframe>
+
+                <div class="android-nav">
+                    <div class="home-pill" onclick="closeApp('home1')"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phone-case">
+            <div class="phone-screen">
+                <div class="status-bar">
+                    <span>16:00</span>
+                    <div>📶 🔋</div>
+                </div>
+
+                <div class="home-screen" id="home2">
+                    <div class="time-widget">
+                        <h2 id="clock2">16:00</h2>
+                        <p>Sabtu, 7 Februari</p>
+                    </div>
+                    <div class="app-grid">
+                        <div class="app-icon" onclick="openApp('home2')">
+                            <div class="icon-circle" style="background: linear-gradient(45deg, #ff9f43, #ee5253);">💞</div>
+                            <span>Mini Bot 2</span>
+                        </div>
+                        <div class="app-icon">
+                            <div class="icon-circle">📂</div>
+                            <span>Files</span>
+                        </div>
+                    </div>
+                </div>
+
+                <iframe class="vm-viewport" src="https://free-sc-mini-38af7a6c3075.herokuapp.com/"></iframe>
+
+                <div class="android-nav">
+                    <div class="home-pill" onclick="closeApp('home2')"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        DEPLOYED BY DexWel SECURITY DIVISION © 2026
+    </div>
+
+    <script>
+        function openApp(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function closeApp(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        // Jam Real-time
+        function updateClock() {
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('clock1').innerText = time;
+            document.getElementById('clock2').innerText = time;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
